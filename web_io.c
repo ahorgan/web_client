@@ -53,7 +53,7 @@ int main(int argc, char **argv)
 	
 	char recv_msg[RECV_LEN];
 	int recv_flag;
-	int fd = open("local_file", O_WRONLY | O_APPEND | O_CREATE, S_IRWXU);
+	int fd = open("local_file", O_WRONLY | O_APPEND | O_CREAT, S_IRWXU);
 	while((recv_flag = recv(farn_socket, recv_msg, RECV_LEN, 0)) > 0)
 	{
 		if(write(fd, recv_msg, RECV_LEN) < 0)
