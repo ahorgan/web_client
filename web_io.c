@@ -53,18 +53,19 @@ int main(int argc, char **argv)
 	
 	char recv_msg[RECV_LEN];
 	int recv_flag;
-	if((recv_flag = recv(farn_socket, recv_msg, RECV_LEN, 0)) > 0)
+	int fd = open("local_file", O_WRONLY | O_APPEND | O_CREATE, S_IRWXU);
+	while((recv_flag = recv(farn_socket, recv_msg, RECV_LEN, 0)) > 0)
 	{
-		printf("%s\n", recv_msg);
+		if(write(fd, recv_msg, RECV_LEN) < 0)
+		{
+			perror("Error writing to file: ");
+			return 1;
+		}
 	}
-	else if(recv_flag == 0)
-	{
-		perror("Broken connection");
-		return -1;
-	}
-	else
+	if(recv_flag < 0)
 	{
 		perror("Error receiving bytes");
+		return 1;
 	}
 	
 	close(farn_socket);
