@@ -7,8 +7,10 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <strings.h>
 
-#define RECV_LEN 1024
+#define RECV_LEN 256
+#define RECV_BYTES 8
 
 int main(int argc, char **argv)
 {
@@ -52,13 +54,14 @@ int main(int argc, char **argv)
 	
 	send(farn_socket, msg, strlen(msg), 0);
 	
-	char recv_msg[RECV_LEN];
+	char *recv_msg = (char *)malloc(RECV_LEN);
 	int recv_flag;
 	int fd = open("local_file", O_WRONLY | O_APPEND | O_CREAT | 
 O_TRUNC, S_IRWXU);
+			
 	while((recv_flag = recv(farn_socket, recv_msg, RECV_LEN, 0)) > 0)
-	{
-		if(write(fd, recv_msg, RECV_LEN) <=  0)
+	{	
+		if(write(fd, recv_msg, recv_flag) <=  0)
 		{
 			perror("Error writing to file: ");
 			return 1;
@@ -73,3 +76,4 @@ O_TRUNC, S_IRWXU);
 	close(farn_socket);
 	return 0;
 }
+
