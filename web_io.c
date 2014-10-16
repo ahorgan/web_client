@@ -54,11 +54,12 @@ int main(int argc, char **argv)
 	
 	send(farn_socket, msg, strlen(msg), 0);
 	
-	char *recv_msg = (char *)malloc(RECV_LEN);
+	char recv_msg[RECV_LEN];
 	int recv_flag;
 	int fd = open("local_file", O_WRONLY | O_APPEND | O_CREAT | 
 O_TRUNC, S_IRWXU);
-			
+	memset(recv_msg, 0, strlen(recv_msg));
+
 	while((recv_flag = recv(farn_socket, recv_msg, RECV_LEN, 0)) > 0)
 	{	
 		if(write(fd, recv_msg, recv_flag) <=  0)
@@ -66,6 +67,7 @@ O_TRUNC, S_IRWXU);
 			perror("Error writing to file: ");
 			return 1;
 		}
+        memset(recv_msg, 0, strlen(recv_msg));
 	}
 	if(recv_flag < 0)
 	{
@@ -73,6 +75,7 @@ O_TRUNC, S_IRWXU);
 		return 1;
 	}
 	
+    close(fd);
 	close(farn_socket);
 	return 0;
 }
